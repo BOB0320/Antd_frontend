@@ -29,10 +29,10 @@ const ProductList = () => {
       isLoading: true,
     }));
     fetchProducts();
-  }, [currentPage, category, maxPrice, minPrice]);
+      }, [currentPage, category, maxPrice, minPrice]);
 
   const fetchProducts = () => {
-    getData(currentPage, pageSize, category, maxPrice, minPrice).then(
+        getData(currentPage, pageSize, category, maxPrice, minPrice).then(
       (info) => {
         console.log(info);
         const { total, data } = info.data;

@@ -3,64 +3,52 @@ import styles from "./styles.module.css";
 
 const Pagination = ({
   pageChangeHandler,
-  totalRows=0,
+  totalRows = 0,
   rowsPerPage,
   currentPage,
 }) => {
-  // Calculating max number of pages
-  console.log(totalRows, rowsPerPage)
   const noOfPages = Math.ceil(totalRows / rowsPerPage);
 
-  // Creating an array with length equal to no.of pages
-  const pagesArr = [...new Array(noOfPages)];
-
-  // State variable to hold the current page. This value is
-  // passed to the callback provided by the parent
-  // const [currentPage, setCurrentPage] = useState(1);
-
-  // Navigation arrows enable/disable state
   const [canGoBack, setCanGoBack] = useState(false);
   const [canGoNext, setCanGoNext] = useState(true);
 
-  // These variables give the first and last record/row number
-  // with respect to the current page
   const [pageFirstRecord, setPageFirstRecord] = useState(1);
   const [pageLastRecord, setPageLastRecord] = useState(rowsPerPage);
 
-  // Onclick handlers for the butons
   const onNextPage = () => pageChangeHandler(currentPage + 1);
   const onPrevPage = () => pageChangeHandler(currentPage - 1);
   const onPageSelect = (pageNo) => pageChangeHandler(pageNo);
 
-  // Disable previous and next buttons in the first and last page
-  // respectively
   useEffect(() => {
-    if (noOfPages === currentPage) {
-      setCanGoNext(false);
-    } else {
-      setCanGoNext(true);
-    }
-    if (currentPage === 1) {
-      setCanGoBack(false);
-    } else {
-      setCanGoBack(true);
-    }
+    setCanGoNext(currentPage < noOfPages);
+    setCanGoBack(currentPage > 1);
   }, [noOfPages, currentPage]);
 
-  // To set the starting index of the page
   useEffect(() => {
     const skipFactor = (currentPage - 1) * rowsPerPage;
-    // Some APIs require skip for paginaiton. If needed use that instead
-    // pageChangeHandler(skipFactor);
-    // pageChangeHandler(currentPage)
     setPageFirstRecord(skipFactor + 1);
-  }, [currentPage]);
+  }, [currentPage, rowsPerPage]);
 
-  // To set the last index of the page
   useEffect(() => {
     const count = pageFirstRecord + rowsPerPage;
     setPageLastRecord(count > totalRows ? totalRows : count - 1);
   }, [pageFirstRecord, rowsPerPage, totalRows]);
+
+  const getPaginationNumbers = () => {
+    let start = Math.max(1, currentPage - 2); // change from const to let
+    let end = Math.min(noOfPages, currentPage + 2); // change from const to let
+    
+    if(currentPage <= 2){
+      end = Math.min(noOfPages, 5);
+    }
+    
+    if(currentPage > noOfPages - 2){
+      start = Math.max(1, noOfPages - 4);
+    }
+    
+    const result = Array.from({length: (end - start + 1)}, (v, k) => k + start);
+    return result
+  }
 
   return (
     <>
@@ -72,28 +60,44 @@ const Pagination = ({
           <div className={styles.pagebuttons}>
             <button
               className={styles.pageBtn}
+              onClick={() => onPageSelect(1)}
+              disabled={!canGoBack}
+            >
+              &#171;
+            </button>
+            <button
+              className={styles.pageBtn}
               onClick={onPrevPage}
               disabled={!canGoBack}
             >
               &#8249;
             </button>
-            {pagesArr.map((num, index) => (
+            {getPaginationNumbers()[0] > 1 && <>...</>}
+            {getPaginationNumbers().map((num, index) => (
               <button
-                key={index}
-                onClick={() => onPageSelect(index + 1)}
-                className={`${styles.pageBtn}  ${
-                  index + 1 === currentPage ? styles.activeBtn : ""
+                key={num}
+                onClick={() => onPageSelect(num)}
+                className={`${styles.pageBtn} ${
+                  num === currentPage ? styles.activeBtn : ""
                 }`}
               >
-                {index + 1}
+                {num}
               </button>
             ))}
+            {getPaginationNumbers()[getPaginationNumbers().length-1] < noOfPages && <>...</>}
             <button
               className={styles.pageBtn}
               onClick={onNextPage}
               disabled={!canGoNext}
             >
               &#8250;
+            </button>
+            <button
+              className={styles.pageBtn}
+              onClick={() => onPageSelect(noOfPages)}
+              disabled={!canGoNext}
+            >
+              &#187;
             </button>
           </div>
         </div>
