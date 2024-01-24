@@ -3,11 +3,12 @@ import styles from "./styles.module.css";
 
 const Pagination = ({
   pageChangeHandler,
-  totalRows,
+  totalRows=0,
   rowsPerPage,
   currentPage,
 }) => {
   // Calculating max number of pages
+  console.log(totalRows, rowsPerPage)
   const noOfPages = Math.ceil(totalRows / rowsPerPage);
 
   // Creating an array with length equal to no.of pages

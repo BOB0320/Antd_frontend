@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getData, columns, formatRowData } from "../data";
+import { getData, columns, formatRowData } from "../../utils/data";
 import Pagination from "../../components/paginations";
 import AppTable from "../../components/table";
 import styles from "./styles.module.css";
@@ -10,7 +10,7 @@ const ProductList = () => {
     rowData: [],
     isLoading: false,
     totalPages: 0,
-    totalPassengers: 150,
+    totalPassengers: 0,
   });
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(24);
@@ -39,8 +39,8 @@ const ProductList = () => {
         setPageData({
           isLoading: false,
           rowData: formatRowData(data, pageSize, currentPage),
-          total,
-          totalPassengers: 150,
+          totalPages:Math.ceil(total/pageSize),
+          totalPassengers: total,
         });
       }
     );
@@ -82,9 +82,10 @@ const ProductList = () => {
       <div
         style={{
           display: "flex",
-          justifyContent: "space-around",
-          gap: "6px",
+          justifyContent: "start",
+          gap: "20px",
           marginBottom: "20px",
+          alignItems: "center"
         }}
       >
         Name:{" "}
@@ -110,11 +111,13 @@ const ProductList = () => {
       <div
         style={{
           display: "flex",
-          justifyContent: "space-around",
+          justifyContent: "start",
           gap: "6px",
           marginBottom: "20px",
-        }}
+          alignItems: "center"
+      }}
       >
+      <span style={{fontSize:'20px'}}>Filter : </span>
         Category:{" "}
         <input
           type="text"
@@ -143,7 +146,7 @@ const ProductList = () => {
       </div>
 
       <Pagination
-        totalRows={pageData.total}
+        totalRows={pageData.totalPassengers}
         pageChangeHandler={setCurrentPage}
         rowsPerPage={24}
         currentPage={currentPage}
