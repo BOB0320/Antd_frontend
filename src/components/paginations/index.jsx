@@ -35,8 +35,8 @@ const Pagination = ({
   }, [pageFirstRecord, rowsPerPage, totalRows]);
 
   const getPaginationNumbers = () => {
-    let start = Math.max(1, currentPage - 2); // change from const to let
-    let end = Math.min(noOfPages, currentPage + 2); // change from const to let
+    let start = Math.max(1, currentPage - 2);
+    let end = Math.min(noOfPages, currentPage + 2);
     
     if(currentPage <= 2){
       end = Math.min(noOfPages, 5);

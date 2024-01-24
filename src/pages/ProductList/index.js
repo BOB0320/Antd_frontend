@@ -34,7 +34,6 @@ const ProductList = () => {
   const fetchProducts = () => {
         getData(currentPage, pageSize, category, maxPrice, minPrice).then(
       (info) => {
-        console.log(info);
         const { total, data } = info.data;
         setPageData({
           isLoading: false,
@@ -55,7 +54,6 @@ const ProductList = () => {
             price: insertPrice,
           })
           .then((res) => {
-            console.log(res);
             if (res.status === 201) {
               alert(res.data.message);
               fetchProducts();
