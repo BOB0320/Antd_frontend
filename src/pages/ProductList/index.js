@@ -28,17 +28,32 @@ const ProductList = () => {
       rowData: [],
       isLoading: true,
     }));
+    const urlParams = new URLSearchParams(window.location.search);
+    const cat = urlParams.get("category");
+    const min = urlParams.get("minPrice");
+    const max = urlParams.get("maxPrice");
+    if (cat) setCategory(cat);
+    if (min) setMinPrice(min);
+    if (max) setMaxPrice(max);
     fetchProducts();
-      }, [currentPage, category, maxPrice, minPrice]);
+  }, [currentPage, category, maxPrice, minPrice]);
 
   const fetchProducts = () => {
-        getData(currentPage, pageSize, category, maxPrice, minPrice).then(
+    const urlParams = new URLSearchParams(window.location.search);
+    const cat = urlParams.get("category");
+    const min = urlParams.get("minPrice");
+    const max = urlParams.get("maxPrice");
+
+    setCategory(cat || category);
+    setMinPrice(min || minPrice);
+    setMaxPrice(max || maxPrice);
+    getData(currentPage, pageSize, category, maxPrice, minPrice).then(
       (info) => {
         const { total, data } = info.data;
         setPageData({
           isLoading: false,
           rowData: formatRowData(data, pageSize, currentPage),
-          totalPages:Math.ceil(total/pageSize),
+          totalPages: Math.ceil(total / pageSize),
           totalPassengers: total,
         });
       }
@@ -46,7 +61,7 @@ const ProductList = () => {
   };
   const handleInsertProduct = async () => {
     try {
-      if (!insertCategory && !insertName && insertPrice > 0) {
+      if (insertCategory && insertName && insertPrice > 0) {
         axios
           .post(`${process.env.REACT_APP_SERVER_URL}product/register`, {
             name: insertName,
@@ -61,7 +76,9 @@ const ProductList = () => {
             }
           })
           .catch((err) => alert(err.response.data.message));
-      } else alert("Invalid Field.");
+      } else {
+        alert("Invalid Field.");
+      }
     } catch (error) {
       console.log(error);
       alert("Error");
@@ -83,19 +100,19 @@ const ProductList = () => {
           justifyContent: "start",
           gap: "20px",
           marginBottom: "20px",
-          alignItems: "center"
+          alignItems: "center",
         }}
       >
         Name:{" "}
         <input
           type="text"
-          value={insertCategory}
+          value={insertName}
           onChange={(e) => setInsertCategory(e.target.value)}
         ></input>
         Category:{" "}
         <input
           type="text"
-          value={insertName}
+          value={insertCategory}
           onChange={(e) => setInsertName(e.target.value)}
         ></input>
         Price:{" "}
@@ -112,27 +129,48 @@ const ProductList = () => {
           justifyContent: "start",
           gap: "6px",
           marginBottom: "20px",
-          alignItems: "center"
-      }}
+          alignItems: "center",
+        }}
       >
-      <span style={{fontSize:'20px'}}>Filter : </span>
+        <span style={{ fontSize: "20px" }}>Filter : </span>
         Category:{" "}
         <input
           type="text"
           value={category}
-          onChange={(e) => setCategory(e.target.value)}
+          onChange={(e) => {
+            setCategory(e.target.value);
+            window.history.pushState(
+              null,
+              null,
+              `?category=${e.target.value}&minPrice=${minPrice}&maxPrice=${maxPrice}`
+            );
+          }}
         ></input>
         MinPrice:{" "}
         <input
           type="number"
           value={minPrice}
-          onChange={(e) => setMinPrice(e.target.value)}
+          onChange={(e) => {
+            setMinPrice(e.target.value);
+            window.history.pushState(
+              null,
+              null,
+              `?category=${category}&minPrice=${e.target.value}&maxPrice=${maxPrice}`
+            );
+          }}
         ></input>
         MaxPrice:{" "}
         <input
           type="number"
           value={maxPrice}
-          onChange={(e) => setMaxPrice(e.target.value)}
+          onChange={(e) => {
+            setMaxPrice(e.target.value);
+            window.history.pushState(
+              null,
+              null,
+              `?category=${category}&minPrice=${minPrice}&maxPrice=${e.target.value}`
+            );
+          }}
         ></input>
       </div>
       <div style={{ height: "auto" }}>
